@@ -65,6 +65,14 @@ def create_models_page(model_classes: List[str]) -> str:
     return html_template_string
 
 
+def create_schemas_page() -> str:
+
+    jinja2_template_string = open("templates/schemas.html", 'r').read()
+    template = Template(jinja2_template_string)
+    html_template_string = template.render()
+    return html_template_string
+
+
 def main():
     fields = [Field(name="id", datatype="int", index=True, unique=True, primary_key=True,
                     foreign_key=False, default_value="", creation_method="", model=""),
@@ -80,6 +88,10 @@ def main():
     model_classes = [text]
     page = create_models_page(model_classes)
     with open("output/models.py", "w") as f:
+        f.write(page)
+
+    page = create_schemas_page()
+    with open("output/schemas.py", "w") as f:
         f.write(page)
     return
 
