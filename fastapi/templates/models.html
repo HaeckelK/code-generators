@@ -5,8 +5,6 @@ from .database import Base
 
 {% for model_class in model_classes %}
 {{model_class}}
-
-    items = relationship("Item", back_populates="owner")
 {% endfor %}
 
 class Item(Base):

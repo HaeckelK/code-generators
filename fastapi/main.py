@@ -27,10 +27,7 @@ class Model:
 def create_sqlalchemy_model_class(model: Model) -> str:
     # TODO handle uppers and lowers in model
     datatypes = {"int": "Integer", "str": "String", "bool": "Boolean"}
-    lines = []
-    lines.append(f"class {model.name.title()}(Base):")
-    lines.append(f'    __tablename__ = "{model.plural.lower()}"')
-    lines.append("")
+    attributes = []
     for field in model.fields:
         args = ""
         args += datatypes[field.datatype]
@@ -42,8 +39,13 @@ def create_sqlalchemy_model_class(model: Model) -> str:
             args += ", index=True"
         if field.default_value:
             args += f", default={str(field.default_value)}"
-        lines.append(f"    {field.name} = Column({args})")
-    text = "\n".join(lines)
+        attributes.append((field.name, args))
+
+    jinja2_template_string = open("templates/model_class.html", 'r').read()
+    template = Template(jinja2_template_string)
+    text = template.render(name=model.name.title(),
+                           plural=model.plural.lower(),
+                           attributes=attributes)
     return text
 
 
