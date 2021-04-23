@@ -4,4 +4,5 @@ class {{name}}(Base):
     {% for attribute in attributes -%}
     {{attribute[0]}} = Column({{attribute[1]}})
     {% endfor %}
-    items = relationship("Item", back_populates="owner")
+    {% for relationship in relationships -%}
+    {{relationship[0]}} = relationship({{relationship[1]}}){% endfor %}

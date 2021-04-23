@@ -41,11 +41,14 @@ def create_sqlalchemy_model_class(model: Model) -> str:
             args += f", default={str(field.default_value)}"
         attributes.append((field.name, args))
 
+    relationships = [("items", '"Item", back_populates="owner"')]
+
     jinja2_template_string = open("templates/model_class.html", 'r').read()
     template = Template(jinja2_template_string)
     text = template.render(name=model.name.title(),
                            plural=model.plural.lower(),
-                           attributes=attributes)
+                           attributes=attributes,
+                           relationships=relationships)
     return text
 
 
