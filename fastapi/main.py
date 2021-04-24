@@ -19,11 +19,31 @@ class Field:
     model: str
 
 
-@dataclass
 class Model:
-    name: str
-    plural: str
-    fields: List[Field]
+    def __init__(self, name: str, plural: str, fields: List[Field]):
+        self.name = name
+        self.plural = plural
+        self.fields = fields
+        self.base_attributes: List[ClassAttribute] = []
+        self.create_attributes: List[ClassAttribute] = []
+        self.read_attributes: List[ClassAttribute] = []
+        return
+
+    def extract_attributes_from_fields(self):
+        for field in self.fields:
+            if field.creation_method == "base":
+                self.base_attributes.append(
+                    ClassAttribute(name=field.name, datatype=field.datatype, default_value=field.default_value)
+                )
+            if field.creation_method == "create":
+                self.create_attributes.append(
+                    ClassAttribute(name=field.name, datatype=field.datatype, default_value=field.default_value)
+                )
+            if field.creation_method == "read":
+                self.read_attributes.append(
+                    ClassAttribute(name=field.name, datatype=field.datatype, default_value=field.default_value)
+                )
+        return
 
 
 def create_sqlalchemy_model_class(model: Model) -> str:
@@ -178,20 +198,82 @@ def generate_schemas_classes_for_model(
 
 
 def main():
-    user_model = Model(name="user", plural="users", fields=[])
-    # TODO temporarily placing attribute definition here, should be a property or
-    # added by some function
-    user_model.base_attributes = [ClassAttribute(name="email", datatype="str")]
-    user_model.create_attributes = [ClassAttribute(name="password", datatype="str")]
-    user_model.read_attributes = [
-        ClassAttribute(name="id", datatype="int"),
-        ClassAttribute(name="is_active", datatype="bool"),
-        ClassAttribute(name="items", datatype="List[Item]", default_value="[]"),
+    fields = [
+        Field(
+            name="id",
+            datatype="int",
+            index=True,
+            unique=True,
+            primary_key=True,
+            foreign_key=False,
+            default_value="",
+            creation_method="read",
+            model="",
+        ),
+        Field(
+            name="email",
+            datatype="str",
+            index=True,
+            unique=True,
+            primary_key=False,
+            foreign_key=False,
+            default_value="",
+            creation_method="base",
+            model="",
+        ),
+        Field(
+            name="hashed_password",
+            datatype="str",
+            index=False,
+            unique=False,
+            primary_key=False,
+            foreign_key=False,
+            default_value="",
+            creation_method="",
+            model="",
+        ),
+        Field(
+            name="password",
+            datatype="str",
+            index=False,
+            unique=False,
+            primary_key=False,
+            foreign_key=False,
+            default_value="",
+            creation_method="create",
+            model="",
+        ),
+        Field(
+            name="is_active",
+            datatype="bool",
+            index=False,
+            unique=False,
+            primary_key=False,
+            foreign_key=False,
+            default_value=True,
+            creation_method="read",
+            model="",
+        ),
+        Field(
+            name="items",
+            datatype="List[Item]",
+            index=False,
+            unique=False,
+            primary_key=False,
+            foreign_key=False,
+            default_value="[]",
+            creation_method="read",
+            model="",
+        ),
     ]
+    user_model = Model(name="user", plural="users", fields=fields)
+    user_model.extract_attributes_from_fields()
 
     item_model = Model(name="item", plural="items", fields=[])
-    item_model.base_attributes = [ClassAttribute(name="title", datatype="str"),
-                                  ClassAttribute(name="description", datatype="Optional[str]", default_value="None")]
+    item_model.base_attributes = [
+        ClassAttribute(name="title", datatype="str"),
+        ClassAttribute(name="description", datatype="Optional[str]", default_value="None"),
+    ]
     item_model.create_attributes = []
     item_model.read_attributes = [
         ClassAttribute(name="id", datatype="int"),
