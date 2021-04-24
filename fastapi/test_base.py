@@ -89,3 +89,23 @@ def create_user_item(db: Session, item: schemas.ItemCreate, user_id: int):
     db.commit()
     db.refresh(db_item)
     return db_item"""
+
+
+def test_create_function_text_decorator():
+    arguments = [ClassAttribute(name="user", datatype="schemas.UserCreate"),
+                 ClassAttribute(name="db", datatype="Session", default_value="Depends(get_db)")]
+    return_value = "crud.create_user(db=db, user=user)"
+    body = """db_user = crud.get_user_by_email(db, email=user.email)
+if db_user:
+    raise HTTPException(status_code=400, detail="Email already registered")"""
+    decorator = 'app.post("/users/", response_model=schemas.User)'
+    function_details = FunctionDetails(name="create_user", arguments=arguments, return_value=return_value,
+                                      body=body, decorator=decorator)
+    result = create_function_text(function_details=function_details)
+    assert result == """\
+@app.post("/users/", response_model=schemas.User)
+def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    db_user = crud.get_user_by_email(db, email=user.email)
+    if db_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
+    return crud.create_user(db=db, user=user)"""

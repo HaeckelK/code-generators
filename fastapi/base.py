@@ -19,6 +19,7 @@ class FunctionDetails:
     arguments: List[ClassAttribute]
     return_value: str
     body: str = ""
+    decorator: str = ""
 
 
 def create_class_text(name: str, base: str = "", class_attributes: List[ClassAttribute] = None, inner_class: str = "") -> str:
@@ -64,5 +65,6 @@ def create_function_text(function_details: FunctionDetails) -> str:
     else:
         body = ""
 
-    text = template.render(function_details=function_details, arguments_text=arguments_text, body=body)
+    text = template.render(function_details=function_details, arguments_text=arguments_text, body=body,
+                           decorator=function_details.decorator)
     return text
