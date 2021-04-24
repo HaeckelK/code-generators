@@ -27,13 +27,17 @@ def test_create_class_text_no_base():
     orm_mode: bool = True"""
 
 
-# def test_create_class_text_inner_class():
-#     inner_class = create_class_text
+def test_create_class_text_inner_class():
+    inner_class = create_class_text(name="Config", class_attributes=[ClassAttribute(name="orm_mode", datatype="bool", default_value="True")])
 
-#     result = create_class_text(name="Item", base="ItemBase", class_attributes=class_attributes)
-#     assert result == """class Item(ItemBase):
-#     id: int
-#     owner_id: int
+    class_attributes = [ClassAttribute(name="id", datatype="int"),
+                        ClassAttribute(name="owner_id", datatype="int")] 
+    result = create_class_text(name="Item", base="ItemBase", class_attributes=class_attributes, inner_class=inner_class)
+    assert result == """class Item(ItemBase):
 
-#     class Config:
-#         orm_mode = True"""
+    id: int
+    owner_id: int
+
+    class Config:
+
+        orm_mode: bool = True"""

@@ -90,8 +90,15 @@ def create_class_text(name: str, base: str = "", class_attributes: List[ClassAtt
         empty_class = True
     else:
         empty_class = False
+    indented_inner_class = []
+    for i, line in enumerate(inner_class.split("\n")):
+        if i != 0:
+            if line != "":
+                line = "    " + line
+        indented_inner_class.append(line)
+    
     text = template.render(name=name, base=base, class_attributes=class_attributes, empty_class=empty_class,
-                           inner_class=inner_class)
+                           inner_class="\n".join(indented_inner_class))
     return text
 
 
