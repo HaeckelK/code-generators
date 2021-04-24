@@ -56,3 +56,15 @@ def test_create_function_text():
     assert result == """\
 def get_user(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()"""
+
+
+def test_create_function_text_default_values():
+    arguments = [ClassAttribute(name="db", datatype="Session"),
+                 ClassAttribute(name="skip", datatype="int", default_value="0"),
+                 ClassAttribute(name="limit", datatype="int", default_value="100"),]
+    return_value = "db.query(models.User).offset(skip).limit(limit).all()"
+    function_details = FunctionDetails(name="get_users", arguments=arguments, return_value=return_value)
+    result = create_function_text(function_details=function_details)
+    assert result == """\
+def get_users(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.User).offset(skip).limit(limit).all()"""

@@ -48,7 +48,10 @@ def create_function_text(function_details: FunctionDetails) -> str:
     
     arguments_texts = []
     for argument in function_details.arguments:
-        arguments_texts.append(argument.name + ": " + argument.datatype)
+        text = argument.name + ": " + argument.datatype
+        if argument.default_value != "":
+            text += " = " + argument.default_value
+        arguments_texts.append(text)
 
     arguments_text = ", ".join(arguments_texts)
 
