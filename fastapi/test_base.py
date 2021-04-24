@@ -1,6 +1,6 @@
 import pytest
 
-from base import create_class_text, ClassAttribute
+from base import create_class_text, ClassAttribute, create_function_text, FunctionDetails
 
 
 def test_create_class_text_class_attributes():
@@ -45,3 +45,14 @@ class Item(ItemBase):
     class Config:
 
         orm_mode: bool = True"""
+
+
+def test_create_function_text():
+    arguments = [ClassAttribute(name="db", datatype="Session"),
+                 ClassAttribute(name="user_id", datatype="int")]
+    return_value = "db.query(models.User).filter(models.User.id == user_id).first()"
+    function_details = FunctionDetails(name="get_user", arguments=arguments, return_value=return_value)
+    result = create_function_text(function_details=function_details)
+    assert result == """\
+def get_user(db: Session, user_id: int):
+    return db.query(models.User).filter(models.User.id == user_id).first()"""
