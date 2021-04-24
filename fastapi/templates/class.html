@@ -1,0 +1,4 @@
+class {{name}}({{base}}):
+{% for attribute in class_attributes %}
+    {{attribute.name}}: {{attribute.datatype}}{% if attribute.default_value != "" %} = {{attribute.default_value}}{% endif %}
+    {%- endfor %}

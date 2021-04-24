@@ -1,7 +1,15 @@
-from typing import Any, List
+from typing import List
 from dataclasses import dataclass
 
 from jinja2 import Template
+
+
+@dataclass
+class ClassAttribute:
+    name: str
+    datatype: str
+    default_value: str = ""
+    description: str = ""
 
 
 @dataclass
@@ -12,7 +20,7 @@ class Field:
     unique: bool
     primary_key: bool
     foreign_key: bool
-    default_value: Any
+    default_value: str
     creation_method: str
     model: str
 
@@ -66,11 +74,17 @@ def create_models_page(model_classes: List[str]) -> str:
 
 
 def create_schemas_page() -> str:
-
     jinja2_template_string = open("templates/schemas.html", 'r').read()
     template = Template(jinja2_template_string)
     html_template_string = template.render()
     return html_template_string
+
+
+def create_class_text(name: str, base: str, class_attributes: List[ClassAttribute]) -> str:
+    jinja2_template_string = open("templates/class.html", 'r').read()
+    template = Template(jinja2_template_string)
+    text = template.render(name=name, base=base, class_attributes=class_attributes)
+    return text
 
 
 def main():
