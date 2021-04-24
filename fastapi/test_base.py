@@ -1,12 +1,13 @@
 import pytest
 
-from base import create_class_text, ClassAttribute, create_function_text, FunctionDetails
+from base import create_class_text, ClassAttribute, create_function_text, FunctionDetails, ClassDetails
 
 
 def test_create_class_text_class_attributes():
     class_attributes = [ClassAttribute(name="title", datatype="str"),
                         ClassAttribute(name="description", datatype="Optional[str]", default_value="None")]
-    result = create_class_text(name="ItemBase", base="BaseModel", class_attributes=class_attributes)
+    class_details = ClassDetails(name="ItemBase", base="BaseModel", class_attributes=class_attributes)
+    result = create_class_text(class_details)
     assert result == """\
 class ItemBase(BaseModel):
 
@@ -15,7 +16,8 @@ class ItemBase(BaseModel):
 
 
 def test_create_class_text_pass():
-    result = create_class_text(name="ItemCreate", base="ItemBase", class_attributes=[])
+    class_details = ClassDetails(name="ItemCreate", base="ItemBase", class_attributes=[])
+    result = create_class_text(class_details)
     assert result == """\
 class ItemCreate(ItemBase):
     pass"""
@@ -23,7 +25,8 @@ class ItemCreate(ItemBase):
 
 def test_create_class_text_no_base():
     class_attributes = [ClassAttribute(name="orm_mode", datatype="bool", default_value="True")]
-    result = create_class_text(name="Config", class_attributes=class_attributes)
+    class_details = ClassDetails(name="Config", class_attributes=class_attributes)
+    result = create_class_text(class_details)
     assert result == """\
 class Config:
 
@@ -31,11 +34,12 @@ class Config:
 
 
 def test_create_class_text_inner_class():
-    inner_class = create_class_text(name="Config", class_attributes=[ClassAttribute(name="orm_mode", datatype="bool", default_value="True")])
+    inner_class = ClassDetails(name="Config", class_attributes=[ClassAttribute(name="orm_mode", datatype="bool", default_value="True")])
 
     class_attributes = [ClassAttribute(name="id", datatype="int"),
-                        ClassAttribute(name="owner_id", datatype="int")] 
-    result = create_class_text(name="Item", base="ItemBase", class_attributes=class_attributes, inner_class=inner_class)
+                        ClassAttribute(name="owner_id", datatype="int")]
+    class_details = ClassDetails(name="Item", base="ItemBase", class_attributes=class_attributes, inner_class=inner_class)
+    result = create_class_text(class_details)
     assert result == """\
 class Item(ItemBase):
 

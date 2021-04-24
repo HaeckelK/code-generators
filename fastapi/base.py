@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import List
 from dataclasses import dataclass
 
@@ -22,25 +23,35 @@ class FunctionDetails:
     decorator: str = ""
 
 
-def create_class_text(name: str, base: str = "", class_attributes: List[ClassAttribute] = None, inner_class: str = "") -> str:
-    if not class_attributes:
-        class_attributes = []
+@dataclass
+class ClassDetails:
+    name: str
+    base: str = ""
+    class_attributes: List[ClassAttribute] = None
+    inner_class: ClassDetails = None
+
+
+def create_class_text(class_details: ClassDetails) -> str:
+    if not class_details.class_attributes:
+        class_details.class_attributes = []
 
     jinja2_template_string = open("templates/class.html", 'r').read()
     template = Template(jinja2_template_string)
-    if not class_attributes:
+    if not class_details.class_attributes:
         empty_class = True
     else:
         empty_class = False
     indented_inner_class = []
-    for i, line in enumerate(inner_class.split("\n")):
-        if i != 0:
-            if line != "":
-                line = "    " + line
-        indented_inner_class.append(line)
+    if class_details.inner_class:
+        inner_class_text = create_class_text(class_details.inner_class)
+        for i, line in enumerate(inner_class_text.split("\n")):
+            if i != 0:
+                if line != "":
+                    line = "    " + line
+            indented_inner_class.append(line)
     
-    text = template.render(name=name, base=base, class_attributes=class_attributes, empty_class=empty_class,
-                           inner_class="\n".join(indented_inner_class))
+    text = template.render(name=class_details.name, base=class_details.base, class_attributes=class_details.class_attributes,
+                           empty_class=empty_class, inner_class="\n".join(indented_inner_class))
     return text
 
 
