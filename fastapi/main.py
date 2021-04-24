@@ -80,14 +80,18 @@ def create_schemas_page() -> str:
     return html_template_string
 
 
-def create_class_text(name: str, base: str, class_attributes: List[ClassAttribute]) -> str:
+def create_class_text(name: str, base: str = "", class_attributes: List[ClassAttribute] = None, inner_class: str = "") -> str:
+    if not class_attributes:
+        class_attributes = []
+
     jinja2_template_string = open("templates/class.html", 'r').read()
     template = Template(jinja2_template_string)
     if not class_attributes:
         empty_class = True
     else:
         empty_class = False
-    text = template.render(name=name, base=base, class_attributes=class_attributes, empty_class=empty_class)
+    text = template.render(name=name, base=base, class_attributes=class_attributes, empty_class=empty_class,
+                           inner_class=inner_class)
     return text
 
 

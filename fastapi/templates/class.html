@@ -1,4 +1,4 @@
-class {{name}}({{base}}):
+class {{name}}{% if base != "" %}({{base}}){% endif %}:
 {% if empty_class %}    pass{% endif -%}
 {% for attribute in class_attributes %}
     {{attribute.name}}: {{attribute.datatype}}{% if attribute.default_value != "" %} = {{attribute.default_value}}{% endif %}
