@@ -68,3 +68,24 @@ def test_create_function_text_default_values():
     assert result == """\
 def get_users(db: Session, skip: int = 0, limit: int = 100):
     return db.query(models.User).offset(skip).limit(limit).all()"""
+
+
+def test_create_function_text_body():
+    arguments = [ClassAttribute(name="db", datatype="Session"),
+                 ClassAttribute(name="item", datatype="schemas.ItemCreate"),
+                 ClassAttribute(name="user_id", datatype="int"),]
+    return_value = "db_item"
+    body = """db_item = models.Item(**item.dict(), owner_id=user_id)
+db.add(db_item)
+db.commit()
+db.refresh(db_item)"""
+    function_details = FunctionDetails(name="create_user_item", arguments=arguments, return_value=return_value,
+                                       body=body)
+    result = create_function_text(function_details=function_details)
+    assert result == """\
+def create_user_item(db: Session, item: schemas.ItemCreate, user_id: int):
+    db_item = models.Item(**item.dict(), owner_id=user_id)
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    return db_item"""

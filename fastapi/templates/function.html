@@ -1,2 +1,5 @@
 def {{function_details.name}}({{arguments_text}}):
+{%- if body != "" %}
+{{body}}
+{%- endif %}
     return {{function_details.return_value}}

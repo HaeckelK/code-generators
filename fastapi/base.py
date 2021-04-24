@@ -18,6 +18,7 @@ class FunctionDetails:
     name: str
     arguments: List[ClassAttribute]
     return_value: str
+    body: str = ""
 
 
 def create_class_text(name: str, base: str = "", class_attributes: List[ClassAttribute] = None, inner_class: str = "") -> str:
@@ -55,5 +56,13 @@ def create_function_text(function_details: FunctionDetails) -> str:
 
     arguments_text = ", ".join(arguments_texts)
 
-    text = template.render(function_details=function_details, arguments_text=arguments_text)
+    if function_details.body != "":
+        indented_text_lines = []
+        for line in function_details.body.split("\n"):
+            indented_text_lines.append("    " + line)
+        body = "\n".join(indented_text_lines)
+    else:
+        body = ""
+
+    text = template.render(function_details=function_details, arguments_text=arguments_text, body=body)
     return text
